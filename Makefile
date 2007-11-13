@@ -1,3 +1,5 @@
+VERSION = 0.5.1
+
 doc: HEADER.html
 
 HEADER.html: README
@@ -6,5 +8,13 @@ HEADER.html: README
 	rm HEADER.txt
 
 dist:
-	git log --no-merges . |git name-rev --tags --stdin >ChangeLog
-	tar czf pyrssi.tar.gz .htaccess pyrssi.py config.py README socket-interface.pl ChangeLog
+	git-archive --format=tar --prefix=pyrssi-$(VERSION)/ HEAD > pyrssi-$(VERSION).tar
+	mkdir -p pyrssi-$(VERSION)
+	git log --no-merges |git name-rev --tags --stdin > pyrssi-$(VERSION)/Changelog
+	tar rf pyrssi-$(VERSION).tar pyrssi-$(VERSION)/Changelog
+	rm -rf pyrssi-$(VERSION)
+	gzip -f -9 pyrssi-$(VERSION).tar
+
+release:
+	git tag -l |grep -q $(VERSION) || git tag -a -m $(VERSION) $(VERSION)
+	$(MAKE) dist

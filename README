@@ -43,3 +43,7 @@ without listing all of them?'
 'Q: Is it possible to start a new query and switch to it immediately?'
 
 ``A: Yes, use /q nick to to so.''
+
+'Q: I already do HTTP auth, could you please disable the built-in auth?'
+
+``A: Yes, sure. Just set your password to empty.''

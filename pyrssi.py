@@ -57,7 +57,7 @@ class Pyrssi:
 	def receive(self):
 		self.__handlecookies()
 		self.__dumpheader()
-		if "pass" not in self.dict.keys():
+		if len(self.passwd) and "pass" not in self.dict.keys():
 			self.__dumplogin()
 		elif "channel" not in self.dict.keys():
 			self.__dumpwindowlist()

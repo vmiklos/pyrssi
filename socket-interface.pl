@@ -65,7 +65,7 @@ sub check_sock {
             # send back a list of the windows
             my $out;
             for(2..last_refnum()) {
-                $out.="$_: ".name_of($_)." (".tag_of($_).")\n";
+                $out.="$_: ".name_of($_)." (".tag_of($_).") ".level_of($_)."\n";
             }
             chomp $out;
             $client->send($out);
@@ -152,6 +152,13 @@ sub tag_of {
     my($refnum)=@_;
     my $win=Irssi::window_find_refnum($refnum);
     return ($win->{active}) ? $win->{active}->{server}->{tag} : "";
+}
+
+# level of given refnum's window
+sub level_of {
+    my($refnum)=@_;
+    my $win=Irssi::window_find_refnum($refnum);
+    return $win->{data_level};
 }
 
 sub msg {

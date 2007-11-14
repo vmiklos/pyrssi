@@ -47,3 +47,12 @@ without listing all of them?'
 'Q: I already do HTTP auth, could you please disable the built-in auth?'
 
 ``A: Yes, sure. Just set your password to empty.''
+
+'Q: The activity list is too long. How to make it shorter?'
+
+``A: All channels are shown by default. You can define the list of channels to
+be displayed in config.py list this:''
+
+----
+mychans = ['#foo', '#bar']
+----

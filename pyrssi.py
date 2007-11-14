@@ -8,9 +8,10 @@ cgitb.enable()
 last = None
 
 class Pyrssi:
-	def __init__(self, sock_path, passwd):
+	def __init__(self, sock_path, passwd, mychans):
 		self.sock_path = sock_path
 		self.passwd = passwd
+		self.mychans = mychans
 		self.year = time.time() + 60*60*24*365
 		self.dict = {}
 	
@@ -203,8 +204,23 @@ class Pyrssi:
 			</anchor>
 			<br />"""
 			return
+		wl = self.__getwindowlist()
+		# first just print the activity list
+		al = []
+		for i in wl:
+			refnum, name, level = re.sub(r'(.*): (.*) \(.*\) ([0-9])', r'\1 \2 \3', i).split(' ')
+			if not len(self.mychans) or name in self.mychans:
+				try:
+					if int(level) == 2:
+						al.append(refnum)
+					elif int(level) == 3:
+						al.append("<b>%s</b>" % refnum)
+				except ValueError:
+					pass
+		if len(al):
+			print "Act: %s<br />" % ",".join(al)
 		print """<a href="pyrssi.py?action=windowlist&amp;jumponly=True">[quick jump]</a><br />"""
-		for i in self.__getwindowlist():
+		for i in wl:
 			refnum = re.sub(r'(.*): .*', r'\1', i)
 			if int(refnum)+1 == (page*cn):
 				print """<a href="pyrssi.py?page=%d">[previous]</a><br />""" % (page-1)
@@ -252,6 +268,6 @@ class Pyrssi:
 		for i in self.lastlines:
 			print self.__escape(i),  '<br />'
 
-pyrssi = Pyrssi(config.socket, config.password)
+pyrssi = Pyrssi(config.socket, config.password, config.mychans)
 pyrssi.send(cgi.FieldStorage())
 pyrssi.receive()

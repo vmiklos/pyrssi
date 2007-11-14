@@ -61,17 +61,12 @@ class Pyrssi:
 			self.__dumplogin()
 		elif "channel" not in self.dict.keys():
 			self.__dumpwindowlist()
-			self.__sysinfo()
 		else:
 			self.__dumpform()
 			self.__dumplastlines()
 		if "pass" in self.dict.keys():
 			self.__dumplogout()
 		self.__dumpfooter()
-
-	def __sysinfo(self):
-		print "Powered by Python %s (on %s/%s)" % (sysconfig.get_python_version(), sys.platform, os.name)
-		print "<br />"
 
 	def __handlecookies(self):
 		# see if we should set cookies

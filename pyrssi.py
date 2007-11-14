@@ -161,12 +161,13 @@ class Pyrssi:
 		print "Cache-Control: no-cache, must-revalidate"
 		print "Pragma: no-cache"
 		print
-		print """<?xml version="1.0"?>
+		sys.stdout.write("""<?xml version="1.0"?>
 		<!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN"
 		"http://www.wapforum.org/DTD/wml_1.1.xml">
-		<wml>
-		<card id="XML" title="%s">
-		<p>""" % time.strftime("[%H:%M]")
+		<wml><card id="XML" title=\"%s""" % time.strftime("[%H:%M]"))
+		if 'channel' in self.dict.keys():
+			sys.stdout.write(" %s" % self.dict['channel'])
+		print """\"><p>"""
 
 	def __dumplogin(self, errmsg=""):
 		print """

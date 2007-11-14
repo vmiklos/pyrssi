@@ -11,7 +11,7 @@ class Pyrssi:
 	def __init__(self, sock_path, passwd):
 		self.sock_path = sock_path
 		self.passwd = passwd
-		self.year = 60*60*24*365
+		self.year = time.time() + 60*60*24*365
 		self.dict = {}
 	
 	def cookie2dict(self):

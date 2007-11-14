@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import cgitb, cgi, re, socket, os, time, Cookie, sha, sys, urllib
+import cgitb, cgi, re, socket, os, time, Cookie, sha, sys, urllib, base64
 from distutils import sysconfig
 from config import config
 
@@ -12,22 +12,33 @@ class Pyrssi:
 		self.sock_path = sock_path
 		self.passwd = passwd
 		self.year = 60*60*24*365
+		self.dict = {}
+	
+	def cookie2dict(self):
+		try:
+			cookie = Cookie.SimpleCookie(os.environ["HTTP_COOKIE"])
+			self.dict = eval(base64.decodestring(cookie['pyrssi'].value))
+		except Exception:
+			self.dict = {}
+
+	def dict2cookie(self):
+		cookie = Cookie.SimpleCookie()
+		cookie['pyrssi'] = base64.encodestring(self.dict.__repr__()).replace('\n', '')
+		cookie['pyrssi']['max-age'] = self.year
+		print cookie
 
 	def send(self, what):
-		try:
-			self.cookie = Cookie.SimpleCookie(os.environ["HTTP_COOKIE"])
-		except KeyError:
-			self.cookie = Cookie.SimpleCookie()
-		if 'pyrssi_network' in self.cookie.keys():
-			self.network = self.cookie['pyrssi_network'].value
+		self.cookie2dict()
+		if 'network' in self.dict.keys():
+			self.network = self.dict['network']
 		else:
 			self.network = None
-		if 'pyrssi_refnum' in self.cookie.keys():
-			self.refnum = self.cookie['pyrssi_refnum'].value
+		if 'refnum' in self.dict.keys():
+			self.refnum = self.dict['refnum']
 		else:
 			self.refnum = None
-		if 'pyrssi_channel' in self.cookie.keys():
-			self.channel = self.cookie['pyrssi_channel'].value
+		if 'channel' in self.dict.keys():
+			self.channel = self.dict['channel']
 		else:
 			self.channel = None
 		if isinstance(what, cgi.FieldStorage):
@@ -46,15 +57,15 @@ class Pyrssi:
 	def receive(self):
 		self.__handlecookies()
 		self.__dumpheader()
-		if "pyrssi_pass" not in self.cookie.keys():
+		if "pass" not in self.dict.keys():
 			self.__dumplogin()
-		elif "pyrssi_channel" not in self.cookie.keys():
+		elif "channel" not in self.dict.keys():
 			self.__dumpwindowlist()
 			self.__sysinfo()
 		else:
 			self.__dumpform()
 			self.__dumplastlines()
-		if "pyrssi_pass" in self.cookie.keys():
+		if "pass" in self.dict.keys():
 			self.__dumplogout()
 		self.__dumpfooter()
 
@@ -70,45 +81,27 @@ class Pyrssi:
 				self.__dumplogin("wrong password!<br />")
 				self.__dumpfooter()
 				sys.exit(0)
-			self.cookie = Cookie.SimpleCookie()
-			self.cookie['pyrssi_pass'] = self.form['pass'].value
-			self.cookie['pyrssi_pass']['max-age'] = self.year
-			if 'pyrssi_channel' in self.cookie.keys():
-				self.cookie['pyrssi_channel']['max-age'] = 0
-			if 'pyrssi_network' in self.cookie.keys():
-				self.cookie['pyrssi_network']['max-age'] = 0
-			if 'pyrssi_refnum' in self.cookie.keys():
-				self.cookie['pyrssi_refnum']['max-age'] = 0
-			print self.cookie
+			self.dict = {}
+			self.dict['pass'] = self.form['pass'].value
+			self.dict2cookie()
 
 		if "action" in self.form.keys() and self.form['action'].value == "logout":
-			self.cookie['pyrssi_pass']['max-age'] = 0
-			if 'pyrssi_channel' in self.cookie.keys():
-				self.cookie['pyrssi_channel']['max-age'] = 0
-			if 'pyrssi_network' in self.cookie.keys():
-				self.cookie['pyrssi_network']['max-age'] = 0
-			if 'pyrssi_refnum' in self.cookie.keys():
-				self.cookie['pyrssi_refnum']['max-age'] = 0
-			print self.cookie
-			self.cookie = {}
+			self.dict = {}
+			self.dict2cookie()
 
 		if "action" in self.form.keys() and self.form['action'].value == "windowselect":
-			self.cookie['pyrssi_channel'] = self.form['window'].value.lower()
-			self.cookie['pyrssi_channel']['max-age'] = self.year
-			self.cookie['pyrssi_network'] = self.form['network'].value
-			self.cookie['pyrssi_network']['max-age'] = self.year
-			self.cookie['pyrssi_refnum'] = self.form['refnum'].value
-			self.cookie['pyrssi_refnum']['max-age'] = self.year
-			print self.cookie
+			self.dict['channel'] = self.form['window'].value.lower()
+			self.dict['network'] = self.form['network'].value
+			self.dict['refnum'] = self.form['refnum'].value
+			self.dict2cookie()
 			self.channel = self.form['window'].value.lower()
 			self.network = self.form['network'].value
 			self.refnum = self.form['refnum'].value
 
 		if "action" in self.form.keys() and self.form['action'].value == "windowlist":
-			if 'pyrssi_channel' in self.cookie.keys():
-				self.cookie['pyrssi_channel']['max-age'] = 0
-				print self.cookie
-				del self.cookie['pyrssi_channel']
+			if 'channel' in self.dict.keys():
+				del self.dict['channel']
+				self.dict2cookie()
 
 	def __connect(self):
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -121,13 +114,10 @@ class Pyrssi:
 				window = re.sub(r'.*: (.*) \(.*', r'\1', i)
 				network = re.sub(r'.* \((.*)\).*', r'\1', i)
 				if refnum == what[3:] or window.lower() == what[3:].lower():
-					self.cookie['pyrssi_channel'] = window.lower()
-					self.cookie['pyrssi_channel']['max-age'] = self.year
-					self.cookie['pyrssi_network'] = network
-					self.cookie['pyrssi_network']['max-age'] = self.year
-					self.cookie['pyrssi_refnum'] = refnum
-					self.cookie['pyrssi_refnum']['max-age'] = self.year
-					print self.cookie
+					self.dict['channel'] = window.lower()
+					self.dict['network'] = network
+					self.dict['refnum'] = refnum
+					self.dict2cookie()
 					self.channel = window
 					self.network = network.lower()
 					self.refnum = refnum

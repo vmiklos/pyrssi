@@ -51,7 +51,7 @@ without listing all of them?'
 'Q: The activity list is too long. How to make it shorter?'
 
 ``A: All channels are shown by default. You can define the list of channels to
-be displayed in config.py list this:''
+be displayed in config.py like this:''
 
 ----
 mychans = ['#foo', '#bar']

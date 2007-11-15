@@ -1,11 +1,14 @@
 VERSION = 0.5.3
 
-doc: HEADER.html
+doc: HEADER.html Changelog
 
 HEADER.html: README
 	ln -s README HEADER.txt
 	asciidoc -a toc -a numbered -a sectids HEADER.txt
 	rm HEADER.txt
+
+Changelog: .git/refs/heads/master
+	git log --no-merges |git name-rev --tags --stdin >Changelog
 
 dist:
 	git-archive --format=tar --prefix=pyrssi-$(VERSION)/ HEAD > pyrssi-$(VERSION).tar

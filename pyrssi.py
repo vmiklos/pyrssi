@@ -184,6 +184,23 @@ class Pyrssi:
 	def __escape(self, s):
 		return cgi.escape(s).replace("$", "$$")
 
+	def __dumpactivitylist(self):
+		# first just print the activity list
+		al = []
+		for i in self.__getwindowlist():
+			refnum, name, level = re.sub(r'(.*): (.*) \(.*\) ([0-9])', r'\1 \2 \3', i).split(' ')
+			if not len(self.mychans) or name in self.mychans:
+				try:
+					if int(level) == 2:
+						al.append(refnum)
+					elif int(level) == 3:
+						al.append("<b>%s</b>" % refnum)
+				except ValueError:
+					pass
+		if len(al):
+			print "Act: %s<br />" % ",".join(al)
+		self.__connect()
+
 	def __dumpwindowlist(self):
 		# how many channels do we want in a page?
 		cn = 10
@@ -204,23 +221,11 @@ class Pyrssi:
 			</anchor>
 			<br />"""
 			return
-		wl = self.__getwindowlist()
-		# first just print the activity list
-		al = []
-		for i in wl:
-			refnum, name, level = re.sub(r'(.*): (.*) \(.*\) ([0-9])', r'\1 \2 \3', i).split(' ')
-			if not len(self.mychans) or name in self.mychans:
-				try:
-					if int(level) == 2:
-						al.append(refnum)
-					elif int(level) == 3:
-						al.append("<b>%s</b>" % refnum)
-				except ValueError:
-					pass
-		if len(al):
-			print "Act: %s<br />" % ",".join(al)
+
+		self.__dumpactivitylist()
+
 		print """<a href="pyrssi.py?action=windowlist&amp;jumponly=True">[quick jump]</a><br />"""
-		for i in wl:
+		for i in self.__getwindowlist():
 			refnum = re.sub(r'(.*): .*', r'\1', i)
 			if int(refnum)+1 == (page*cn):
 				print """<a href="pyrssi.py?page=%d">[previous]</a><br />""" % (page-1)

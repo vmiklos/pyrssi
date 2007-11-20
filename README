@@ -57,4 +57,6 @@ be displayed in config.py like this:''
 mychans = ['#foo', '#bar']
 ----
 
+Back to my link:/projects[projects page].
+
 // vim: ft=asciidoc

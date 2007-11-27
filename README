@@ -26,7 +26,7 @@ First you need (my improved version of) socket-interface.pl so that you'll have
 a socket in your ~/.irssi/socket. Then you need pyrssi.py, that cgi will
 connect to the socket and will generate the wap pages.
 
-Don't forget to edit config.py: the sha1sum of your password and the socket
+Don't forget to edit pyrssi.config: the sha1sum of your password and the socket
 path!
 
 == FAQ
@@ -51,7 +51,7 @@ without listing all of them?'
 'Q: The activity list is too long. How to make it shorter?'
 
 ``A: All channels are shown by default. You can define the list of channels to
-be displayed in config.py like this:''
+be displayed in pyrssi.config like this:''
 
 ----
 mychans = ['#foo', '#bar']

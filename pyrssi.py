@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import cgitb, cgi, re, socket, os, time, Cookie, sha, sys, urllib, base64
-from distutils import sysconfig
-from config import config
+from ConfigParser import ConfigParser
 
 cgitb.enable()
 last = None
@@ -273,6 +272,12 @@ class Pyrssi:
 		for i in self.lastlines:
 			print self.__escape(i),  '<br />'
 
-pyrssi = Pyrssi(config.socket, config.password, config.mychans)
+c = ConfigParser()
+c.read('pyrssi.config')
+sock = eval(re.sub('#.*', '', c.get('pyrssi', 'socket')))
+password = eval(re.sub('#.*', '', c.get('pyrssi', 'password')))
+mychans = eval(re.sub(' #.*', '', c.get('pyrssi', 'mychans')))
+
+pyrssi = Pyrssi(sock, password, mychans)
 pyrssi.send(cgi.FieldStorage())
 pyrssi.receive()

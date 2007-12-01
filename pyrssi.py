@@ -11,7 +11,6 @@ class Pyrssi:
 		self.sock_path = sock_path
 		self.passwd = passwd
 		self.mychans = mychans
-		self.year = time.time() + 60*60*24*365
 		self.dict = {}
 	
 	def cookie2dict(self):
@@ -24,7 +23,6 @@ class Pyrssi:
 	def dict2cookie(self):
 		cookie = Cookie.SimpleCookie()
 		cookie['pyrssi'] = base64.encodestring(self.dict.__repr__()).replace('\n', '')
-		cookie['pyrssi']['max-age'] = self.year
 		print cookie
 
 	def send(self, what):

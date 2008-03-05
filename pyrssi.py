@@ -41,6 +41,9 @@ class Pyrssi:
 			self.channel = None
 		if isinstance(what, cgi.FieldStorage):
 			self.form = what
+		if 'pass' not in self.dict.keys() or sha.sha(self.dict['pass']).hexdigest() != self.passwd:
+			return
+		if isinstance(what, cgi.FieldStorage):
 			try:
 				data = []
 				if "msg_prefix" in self.form.keys():

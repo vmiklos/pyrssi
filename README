@@ -22,9 +22,11 @@ can control your client from your mobile phone.
 
 == How does it work?
 
-First you need (my improved version of) socket-interface.pl so that you'll have
-a socket in your ~/.irssi/socket. Then you need pyrssi.py, that cgi will
-connect to the socket and will generate the wap pages.
+First you need
+http://github.com/msparks/irssiscripts/raw/1e6d50bf541b1bb991f1ece883ad3b6aa6040783/socket-interface.pl[socket-interface.pl]
+so that you'll have a socket in your ~/.irssi/socket. Then you need
+pyrssi.py, that cgi will connect to the socket and will generate the wap
+pages.
 
 Don't forget to edit pyrssi.config: the sha1sum of your password and the socket
 path!

@@ -63,6 +63,8 @@ be displayed in pyrssi.config like this:''
 mychans = ['#foo', '#bar']
 ----
 
-Back to my link:/projects[projects page].
+== Download
+
+From https://github.com/vmiklos/pyrssi[GitHub].
 
 // vim: ft=asciidoc
